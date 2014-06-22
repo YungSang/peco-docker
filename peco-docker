@@ -1,0 +1,90 @@
+#!/bin/sh
+
+name=$(basename $0)
+
+## Functions
+
+  _exit_with() {
+    local message=$1
+
+    echo $message
+    exit 0
+  }
+
+  _is_executable() {
+    local command=$1
+    type $command > /dev/null 2>&1
+  }
+
+  _peco_docker_search() {
+    local image_name=$1
+
+    if [ -z "$image_name" ] ; then
+      _exit_with "Usage: $name search <image-name>"
+    fi
+
+    docker search "$image_name" | awk 'NR > 1' | peco
+  }
+
+  _peco_docker_pull() {
+    local image_name=$1
+
+    if [ -z "$image_name" ] ; then
+      _exit_with "Usage: $name pull <image-name>"
+    fi
+
+    local images=$(_peco_docker_search "$image_name" | awk '{print $1}')
+
+    for image in $images ; do
+      docker pull "$image"
+    done
+  }
+
+  _peco_docker_help() {
+      cat <<EOF
+Usage: $name <command>
+
+  search  Search Docker images
+  pull    Search Docker images and download the selected images
+  help    Show this message
+EOF
+  }
+
+  peco_docker() {
+    local sub=$1
+
+    if _is_executable "_peco_docker_$sub" ; then
+      _peco_docker_$sub "$2"
+    else
+      echo "$name: no such command \"$sub\""
+      exit 1
+    fi
+  }
+
+## Check required command
+
+  _is_executable peco || {
+    cat <<EOF
+"peco" couldn't be found. Please install or set \$PATH.
+
+See: https://github.com/peco/peco#installation
+EOF
+    exit 1
+  }
+
+  _is_executable docker || {
+    cat <<EOF
+"docker" couldn't be found. Please install or set \$PATH.
+
+See: https://docs.docker.com/installation/#installation
+EOF
+    exit 1
+  }
+
+## Main routine
+
+  if [ $# -ge 1 ] ; then
+    peco_docker "$*"
+  else
+    peco_docker help
+  fi
