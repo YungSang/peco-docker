@@ -74,6 +74,13 @@ name=$(basename $0)
     done
   }
 
+  _peco_docker_save() {
+    image=$(_peco_docker_images -a | awk 'NR == 1 {print $3}')
+
+    echo docker save "$image"
+    docker save "$image"
+  }
+
   _peco_docker_rmi() {
     local arg="$1"
 
@@ -94,6 +101,17 @@ name=$(basename $0)
     docker inspect $args $images
   }
 
+  _peco_docker_history() {
+    local arg=$*
+
+    local images=$(_peco_docker_images -a | awk '{print $3}')
+
+    for image in $images ; do
+      echo docker history $arg "$image"
+      docker history $arg "$image"
+    done
+  }
+
   _peco_docker_ps() {
     local arg=$*
 
@@ -105,6 +123,38 @@ name=$(basename $0)
     runnings=${runnings%%?}
 
     docker ps -a | awk 'NR > 1 && $1 !~ /^('"$runnings"')$/' | peco 2> /dev/null
+  }
+
+  _peco_docker_attach() {
+    local arg=$*
+
+    container=$(_peco_docker_ps | awk 'NR == 1 {print $1}')
+
+    echo docker attach $args "$container"
+    docker attach $args "$container"
+  }
+
+  _peco_docker_commit() {
+    local tag="$1"
+
+    container=$(_peco_docker_ps -a | awk 'NR == 1 {print $1}')
+
+    echo docker commit "$container" $tag
+    docker commit "$container" $tag
+  }
+
+  _peco_docker_diff() {
+    container=$(_peco_docker_ps -a | awk 'NR == 1 {print $1}')
+
+    echo docker diff "$container"
+    docker diff "$container"
+  }
+
+  _peco_docker_export() {
+    container=$(_peco_docker_ps -a | awk 'NR == 1 {print $1}')
+
+    echo docker export "$container"
+    docker export "$container"
   }
 
   _peco_docker_start() {
@@ -183,26 +233,32 @@ name=$(basename $0)
 Usage: $name <command> [OPTIONS]
 
 command:
-  search         Search Docker images in the Docker registry
-  pull           Search Docker images and download the selected images
+  search          Search Docker images in the Docker registry
+  pull            Search Docker images and download the selected images
 
-  images [-a]    List the selected images in your Docker host ($DOCKER_HOST)
-  tag            Tag the first selected image
-  push           Push the selected images to the Docker registry
-  rmi [-f]       Remove the selected images
-  inspecti [-f]  Show low-level information on the selected images
+  images [-a]     List the selected images in your Docker host ($DOCKER_HOST)
+  tag             Tag the first selected image
+  push            Push the selected images to the Docker registry
+  save > <tar>    Export the first selected image
+  rmi [-f]        Remove the selected images
+  inspecti [-f]   Show low-level information on the selected images
+  history﻿         Show the history of the selected images
 
-  ps [-a]        List the selected containers in your Docker host ($DOCKER_HOST)
-  start          Start the selected stopped containers
-  restart        Restart the selected running containers
-  stop           Stop the selected running containers
-  kill           Kill the selected running containers
-  rm [-f]        Remove the selected containers
-  inspect [-f]   Show low-level information on the selected containers
-  top            Lookup the processes of the selected running containers
-  logs           Fetch the logs of the first selected container
+  ps [-a]         List the selected containers in your Docker host ($DOCKER_HOST)
+  attach          Attach to the first selected running container
+  commit [tag]    Create a new image from the first selected running container
+  diff            Inspect changes on the first selected container's filesystem
+  export > <tar>  Export the contents of the first selected container's filesystem
+  start           Start the selected stopped containers
+  restart         Restart the selected running containers
+  stop            Stop the selected running containers
+  kill            Kill the selected running containers
+  rm [-f]         Remove the selected containers
+  inspect [-f]    Show low-level information on the selected containers
+  top             Lookup the processes of the selected running containers
+  logs            Fetch the logs of the first selected container
 
-  help           Show this message
+  help            Show this message
 EOF
   }
 
