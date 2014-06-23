@@ -80,8 +80,8 @@ name=$(basename $0)
     local images=$(_peco_docker_images -a | awk '{print $3}')
 
     for image in $images ; do
-      echo docker rmi "$arg" "$image"
-      docker rmi "$arg" "$image"
+      echo docker rmi $arg "$image"
+      docker rmi $arg "$image"
     done
   }
 
@@ -146,8 +146,8 @@ name=$(basename $0)
     fi
 
     for container in $containers ; do
-      echo docker rm "$arg" "$container"
-      docker rm "$arg" "$container"
+      echo docker rm $arg "$container"
+      docker rm $arg "$container"
     done
   }
 
