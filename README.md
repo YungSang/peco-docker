@@ -22,7 +22,7 @@ $ docker ps -a | peco
 ```
 $ cd /path/to/download
 $ chmod +x peco-docker
-$ mv peco-docker  /path/to/bin # in your $PATH
+$ mv peco-docker /path/to/bin # in your $PATH
 ```
 
 You can name it as you want.
@@ -38,26 +38,33 @@ $ peco-docker help
 Usage: peco-docker <command> [OPTIONS]
 
 command:
-  search         Search Docker images in the Docker registry
-  pull           Search Docker images and download the selected images
+  search          Search Docker images in the Docker registry
+  pull            Search Docker images and download the selected images
 
-  images [-a]    List the selected images in your Docker host (tcp://localhost:2375)
-  tag            Tag the first selected image
-  push           Push the selected images to the Docker registry
-  rmi [-f]       Remove the selected images
-  inspecti [-f]  Show low-level information on the selected images
+  images [-a]     List the selected images in your Docker host (tcp://localhost:2375)
+  tag             Tag the FIRST selected image
+  push            Push the selected images to the Docker registry
+  save > <tar>    Export the FIRST selected image
+  rmi [-f]        Remove the selected images
+  inspecti [-f]   Show low-level information on the selected images
+  history         Show the history of the selected images
 
-  ps [-a]        List the selected containers in your Docker host (tcp://localhost:2375)
-  start          Start the selected stopped containers
-  restart        Restart the selected running containers
-  stop           Stop the selected running containers
-  kill           Kill the selected running containers
-  rm [-f]        Remove the selected containers
-  inspect [-f]   Show low-level information on the selected containers
-  top            Lookup the processes of the selected running containers
-  logs           Fetch the logs of the first selected container
+  ps [-a]         List the selected containers in your Docker host (tcp://localhost:2375)
+  attach          Attach to the FIRST selected running container
+  commit [tag]    Create a new image from the FIRST selected running container
+  diff            Inspect changes on the FIRST selected container's filesystem
+  export > <tar>  Export the contents of the FIRST selected container's filesystem
+  start           Start the selected stopped containers
+  restart         Restart the selected running containers
+  stop            Stop the selected running containers
+  kill            Kill the selected running containers
+  rm [-f]         Remove the selected containers
+  inspect [-f]    Show low-level information on the selected containers
+  top             Lookup the processes of the selected running containers
+  logs            Fetch the logs of the FIRST selected container
 
-  help           Show this message
+  version         Show the version of peco-docker
+  help            Show this message
 ```
 
 ```
