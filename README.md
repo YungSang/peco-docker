@@ -33,21 +33,44 @@ $ alias deco="peco-docker"
 
 ```
 $ peco-docker help
-Usage: peco-docker <command>
+Usage: peco-docker <command> [OPTIONS]
 
-  search  Search Docker images
-  pull    Search Docker images and download the selected images
-  help    Show this message
+command:
+  search         Search Docker images in the Docker registry
+  pull           Search Docker images and download the selected images
+
+  images [-a]    List the selected images in your Docker host (tcp://localhost:2375)
+  tag            Tag the first selected image
+  push           Push the selected images to the Docker registry
+  rmi [-f]       Remove the selected images
+  inspecti [-f]  Show low-level information on the selected images
+
+  ps [-a]        List the selected containers in your Docker host (tcp://localhost:2375)
+  start          Start the selected stopped containers
+  restart        Restart the selected running containers
+  stop           Stop the selected running containers
+  kill           Kill the selected running containers
+  rm [-f]        Remove the selected containers
+  inspect [-f]   Show low-level information on the selected containers
+  top            Lookup the processes of the selected running containers
+  logs           Fetch the logs of the first selected container
+
+  help           Show this message
 ```
 
 ```
 $ peco-docker search
-Usage: peco-docker search <image-name>
+Usage: peco-docker search <term>
 ```
 
 ```
 $ peco-docker pull
-Usage: peco-docker pull <image-name>
+Usage: peco-docker pull <term to search> [tag]
+```
+
+```
+$ peco-docker tag
+Usage: peco-docker tag <name>[:tag]
 ```
 
 ## License

@@ -5,56 +5,212 @@ name=$(basename $0)
 ## Functions
 
   _exit_with() {
-    local message=$1
+    local message="$1"
 
-    echo $message
+    echo "$message"
     exit 0
   }
 
   _is_executable() {
-    local command=$1
-    type $command > /dev/null 2>&1
+    local command="$1"
+    type "$command" > /dev/null 2>&1
   }
 
   _peco_docker_search() {
-    local image_name=$1
+    local term="$1"
 
-    if [ -z "$image_name" ] ; then
-      _exit_with "Usage: $name search <image-name>"
+    if [ -z "$term" ] ; then
+      _exit_with "Usage: $name search <term>"
     fi
 
-    docker search "$image_name" | awk 'NR > 1' | peco
+    docker search $term | awk 'NR > 1' | peco 2> /dev/null
   }
 
   _peco_docker_pull() {
-    local image_name=$1
+    local term="$1"
+    local tag="$2"
 
-    if [ -z "$image_name" ] ; then
-      _exit_with "Usage: $name pull <image-name>"
+    if [ -z "$term" ] ; then
+      _exit_with "Usage: $name pull <term to search> [tag]"
     fi
 
-    local images=$(_peco_docker_search "$image_name" | awk '{print $1}')
+    if [ -z "$tag" ] ; then
+      tag="latest"
+    fi
+
+    local images=$(_peco_docker_search $term | awk '{print $1}')
 
     for image in $images ; do
-      docker pull "$image"
+      echo docker pull "${image}:${tag}"
+      docker pull "${image}:${tag}"
     done
+  }
+
+  _peco_docker_images() {
+    local arg=$*
+
+    docker images $arg | awk 'NR > 1' | peco 2> /dev/null
+  }
+
+  _peco_docker_tag() {
+    local tag="$1"
+
+    if [ -z "$tag" ] ; then
+      _exit_with "Usage: $name tag <name>[:tag]"
+    fi
+
+    local image=$(_peco_docker_images -a | awk 'NR == 1 {print $3}')
+
+    echo docker tag "$image" "$tag"
+    docker tag "$image" "$tag"
+  }
+
+  _peco_docker_push() {
+    local images=$(_peco_docker_images | awk '{print $1, $2}' | tr " " ":")
+
+    for image in $images ; do
+      echo docker push "$image"
+      docker push "$image"
+    done
+  }
+
+  _peco_docker_rmi() {
+    local arg="$1"
+
+    local images=$(_peco_docker_images -a | awk '{print $3}')
+
+    for image in $images ; do
+      echo docker rmi "$arg" "$image"
+      docker rmi "$arg" "$image"
+    done
+  }
+
+  _peco_docker_inspecti() {
+    local arg=$*
+
+    local images=$(_peco_docker_images -a | awk 'BEGIN{ORS=" "}{print $3}')
+
+    echo docker inspect $args $images >&2
+    docker inspect $args $images
+  }
+
+  _peco_docker_ps() {
+    local arg=$*
+
+    docker ps $arg | awk 'NR > 1' | peco 2> /dev/null
+  }
+
+  _peco_docker_ps_stopped() {
+    local runnings=$(docker ps | awk 'NR > 1' | awk '{print $1}' | tr "\\n" "|")
+    runnings=${runnings%%?}
+
+    docker ps -a | awk 'NR > 1 && $1 !~ /^('"$runnings"')$/' | peco 2> /dev/null
+  }
+
+  _peco_docker_start() {
+    local containers=$(_peco_docker_ps_stopped | awk 'BEGIN{ORS=" "}{print $1}')
+
+    echo docker start $containers
+    docker start $containers
+  }
+
+  _peco_docker_restart() {
+    local containers=$(_peco_docker_ps | awk 'BEGIN{ORS=" "}{print $1}')
+
+    echo docker restart $containers
+    docker restart $containers
+  }
+
+  _peco_docker_stop() {
+    local containers=$(_peco_docker_ps | awk 'BEGIN{ORS=" "}{print $1}')
+
+    echo docker stop $containers
+    docker stop $containers
+  }
+
+  _peco_docker_kill() {
+    local containers=$(_peco_docker_ps | awk 'BEGIN{ORS=" "}{print $1}')
+
+    echo docker kill $containers
+    docker kill $containers
+  }
+
+  _peco_docker_rm() {
+    local arg="$1"
+    local containers=""
+
+    if [ "$arg" = "-f" ] ; then
+      containers=$(_peco_docker_ps -a | awk '{print $1}')
+    else
+      containers=$(_peco_docker_ps_stopped | awk '{print $1}')
+    fi
+
+    for container in $containers ; do
+      echo docker rm "$arg" "$container"
+      docker rm "$arg" "$container"
+    done
+  }
+
+  _peco_docker_inspect() {
+    local arg=$*
+
+    local containers=$(_peco_docker_ps -a | awk 'BEGIN{ORS=" "}{print $1}')
+
+    echo docker inspect $args $containers >&2
+    docker inspect $args $containers
+  }
+
+  _peco_docker_top() {
+    containers=$(_peco_docker_ps | awk '{print $1}')
+
+    for container in $containers ; do
+      echo docker top "$container"
+      docker top "$container"
+    done
+  }
+
+  _peco_docker_logs() {
+    local arg=$*
+
+    container=$(_peco_docker_ps -a | awk 'NR == 1 {print $1}')
+
+    echo docker logs $args "$container"
+    docker logs $args "$container"
   }
 
   _peco_docker_help() {
       cat <<EOF
-Usage: $name <command>
+Usage: $name <command> [OPTIONS]
 
-  search  Search Docker images
-  pull    Search Docker images and download the selected images
-  help    Show this message
+command:
+  search         Search Docker images in the Docker registry
+  pull           Search Docker images and download the selected images
+
+  images [-a]    List the selected images in your Docker host ($DOCKER_HOST)
+  tag            Tag the first selected image
+  push           Push the selected images to the Docker registry
+  rmi [-f]       Remove the selected images
+  inspecti [-f]  Show low-level information on the selected images
+
+  ps [-a]        List the selected containers in your Docker host ($DOCKER_HOST)
+  start          Start the selected stopped containers
+  restart        Restart the selected running containers
+  stop           Stop the selected running containers
+  kill           Kill the selected running containers
+  rm [-f]        Remove the selected containers
+  inspect [-f]   Show low-level information on the selected containers
+  top            Lookup the processes of the selected running containers
+  logs           Fetch the logs of the first selected container
+
+  help           Show this message
 EOF
   }
 
   peco_docker() {
-    local sub=$1
+    local sub="$1"; shift
 
     if _is_executable "_peco_docker_$sub" ; then
-      _peco_docker_$sub "$2"
+      _peco_docker_$sub $*
     else
       echo "$name: no such command \"$sub\""
       exit 1
@@ -81,7 +237,7 @@ EOF
     exit 1
   }
 
-  if [ -z "${DOCKER_HOST}" ] ; then
+  if [ -z "$DOCKER_HOST" ] ; then
     cat <<EOF
 "DOCKER_HOST" is not set. Please set it for your Docker host.
 
@@ -93,7 +249,7 @@ EOF
 ## Main routine
 
   if [ $# -ge 1 ] ; then
-    peco_docker "$*"
+    peco_docker $*
   else
     peco_docker help
   fi
