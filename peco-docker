@@ -1,6 +1,7 @@
 #!/bin/sh
 
 name=$(basename $0)
+version="0.2.0"
 
 ## Functions
 
@@ -228,6 +229,10 @@ name=$(basename $0)
     docker logs $args "$container"
   }
 
+  _peco_docker_version() {
+    _exit_with "$name version $version"
+  }
+
   _peco_docker_help() {
       cat <<EOF
 Usage: $name <command> [OPTIONS]
@@ -258,6 +263,7 @@ command:
   top             Lookup the processes of the selected running containers
   logs            Fetch the logs of the FIRST selected container
 
+  version         Show the version of $name
   help            Show this message
 EOF
   }
