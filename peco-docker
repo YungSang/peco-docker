@@ -81,6 +81,15 @@ EOF
     exit 1
   }
 
+  if [ -z "${DOCKER_HOST}" ] ; then
+    cat <<EOF
+"DOCKER_HOST" is not set. Please set it for your Docker host.
+
+e.g. DOCKER_HOST=tcp://localhost:2375
+EOF
+    exit 1
+  fi
+
 ## Main routine
 
   if [ $# -ge 1 ] ; then
