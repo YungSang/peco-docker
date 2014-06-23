@@ -17,10 +17,12 @@ $ docker ps -a | peco
 
 ### Installation
 
+- Download the latest release of `peco-docker` [here](https://github.com/YungSang/peco-docker/releases/latest).
+
 ```
-$ cd /path/to/bin # in your $PATH
-$ curl -OL https://raw.githubusercontent.com/YungSang/peco-docker/master/peco-docker
-$ chmod +x ./peco-docker
+$ cd /path/to/download
+$ chmod +x peco-docker
+$ mv peco-docker  /path/to/bin # in your $PATH
 ```
 
 You can name it as you want.
