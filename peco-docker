@@ -237,18 +237,18 @@ command:
   pull            Search Docker images and download the selected images
 
   images [-a]     List the selected images in your Docker host ($DOCKER_HOST)
-  tag             Tag the first selected image
+  tag             Tag the FIRST selected image
   push            Push the selected images to the Docker registry
-  save > <tar>    Export the first selected image
+  save > <tar>    Export the FIRST selected image
   rmi [-f]        Remove the selected images
   inspecti [-f]   Show low-level information on the selected images
   history﻿         Show the history of the selected images
 
   ps [-a]         List the selected containers in your Docker host ($DOCKER_HOST)
-  attach          Attach to the first selected running container
-  commit [tag]    Create a new image from the first selected running container
-  diff            Inspect changes on the first selected container's filesystem
-  export > <tar>  Export the contents of the first selected container's filesystem
+  attach          Attach to the FIRST selected running container
+  commit [tag]    Create a new image from the FIRST selected running container
+  diff            Inspect changes on the FIRST selected container's filesystem
+  export > <tar>  Export the contents of the FIRST selected container's filesystem
   start           Start the selected stopped containers
   restart         Restart the selected running containers
   stop            Stop the selected running containers
@@ -256,7 +256,7 @@ command:
   rm [-f]         Remove the selected containers
   inspect [-f]    Show low-level information on the selected containers
   top             Lookup the processes of the selected running containers
-  logs            Fetch the logs of the first selected container
+  logs            Fetch the logs of the FIRST selected container
 
   help            Show this message
 EOF
