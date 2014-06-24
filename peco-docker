@@ -94,7 +94,7 @@ version="0.2.0"
   }
 
   _peco_docker_inspecti() {
-    local arg=$*
+    local args="$@"
 
     local images=$(_peco_docker_images -a | awk 'BEGIN{ORS=" "}{print $3}')
 
@@ -127,7 +127,7 @@ version="0.2.0"
   }
 
   _peco_docker_attach() {
-    local arg=$*
+    local args="$@"
 
     container=$(_peco_docker_ps | awk 'NR == 1 {print $1}')
 
@@ -203,7 +203,7 @@ version="0.2.0"
   }
 
   _peco_docker_inspect() {
-    local arg=$*
+    local args="$@"
 
     local containers=$(_peco_docker_ps -a | awk 'BEGIN{ORS=" "}{print $1}')
 
@@ -221,7 +221,7 @@ version="0.2.0"
   }
 
   _peco_docker_logs() {
-    local arg=$*
+    local args="$@"
 
     container=$(_peco_docker_ps -a | awk 'NR == 1 {print $1}')
 
