@@ -27,14 +27,10 @@ version="0.2.1"
 
   _peco_docker_pull() {
     local term="$1"
-    local tag="$2"
+    local tag="${2:-latest}"
 
     if [ -z "$term" ] ; then
       _exit_with "Usage: $name pull <term to search> [tag]"
-    fi
-
-    if [ -z "$tag" ] ; then
-      tag="latest"
     fi
 
     local images=$(_peco_docker_search $term | awk '{print $1}')
