@@ -6,9 +6,7 @@ version="0.2.0"
 ## Functions
 
   _exit_with() {
-    local message="$1"
-
-    echo "$message"
+    echo "$@"
     exit 0
   }
 
@@ -48,9 +46,9 @@ version="0.2.0"
   }
 
   _peco_docker_images() {
-    local arg=$*
+    local args="$@"
 
-    docker images $arg | awk 'NR > 1' | peco 2> /dev/null
+    docker images $args | awk 'NR > 1' | peco 2> /dev/null
   }
 
   _peco_docker_tag() {
@@ -103,20 +101,20 @@ version="0.2.0"
   }
 
   _peco_docker_history() {
-    local arg=$*
+    local args="$@"
 
     local images=$(_peco_docker_images -a | awk '{print $3}')
 
     for image in $images ; do
-      echo docker history $arg "$image"
-      docker history $arg "$image"
+      echo docker history $args "$image"
+      docker history $args "$image"
     done
   }
 
   _peco_docker_ps() {
-    local arg=$*
+    local args="$@"
 
-    docker ps $arg | awk 'NR > 1' | peco 2> /dev/null
+    docker ps $args | awk 'NR > 1' | peco 2> /dev/null
   }
 
   _peco_docker_ps_stopped() {
@@ -272,7 +270,7 @@ EOF
     local sub="$1"; shift
 
     if _is_executable "_peco_docker_$sub" ; then
-      _peco_docker_$sub $*
+      _peco_docker_$sub "$@"
     else
       echo "$name: no such command \"$sub\""
       exit 1
@@ -311,7 +309,7 @@ EOF
 ## Main routine
 
   if [ $# -ge 1 ] ; then
-    peco_docker $*
+    peco_docker "$@"
   else
     peco_docker help
   fi
